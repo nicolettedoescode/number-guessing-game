@@ -1,0 +1,197 @@
+/* Global Styles */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #fef8e7;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: #333;
+}
+
+/* Container Styles */
+.container {
+    background-color: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    width: 300px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+}
+
+.container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Heading Styles */
+h1 {
+    font-size: 26px;
+    color: #ff6f91;
+    margin-bottom: 15px;
+    font-weight: 700;
+    font-family: 'Caveat', cursive;
+}
+
+/* Paragraph Styles */
+p {
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 15px;
+}
+
+/* Emoji Feedback Styles */
+#emoji {
+    font-size: 40px;
+    margin-bottom: 15px;
+    color: #ff6f91;
+}
+
+/* Input Field Styles */
+input[type="number"] {
+    width: calc(100% - 20px);
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 2px solid #ffd1dc;
+    border-radius: 12px;
+    font-size: 16px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+    color: #333;
+    background-color: #fffafc;
+}
+
+input[type="number"]:focus {
+    border-color: #ff6f91;
+    background-color: #ffe3e8;
+    outline: none;
+}
+
+/* Difficulty Select Styles */
+select {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 2px solid #ffd1dc;
+    border-radius: 12px;
+    font-size: 16px;
+    background-color: #fffafc;
+    color: #333;
+    cursor: pointer;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+select:focus {
+    border-color: #ff6f91;
+    background-color: #ffe3e8;
+    outline: none;
+}
+
+/* Button Styles */
+button {
+    width: 100%;
+    padding: 12px;
+    background-color: #ff6f91;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+    background-color: #ff85a1;
+    transform: translateY(-2px);
+}
+
+button:active {
+    background-color: #ff6f91;
+    transform: translateY(0);
+}
+
+/* Message Styles */
+#message {
+    font-size: 16px;
+    color: #ff6f91;
+    margin-top: 15px;
+    font-weight: 600;
+    min-height: 20px;
+}
+
+/* Attempts Styles */
+#attempts {
+    font-size: 14px;
+    color: #888;
+    margin-top: 8px;
+    font-weight: 500;
+}
+
+/* Timer Styles */
+#timer {
+    font-size: 16px;
+    color: #ff4500;
+    margin-top: 15px;
+    font-weight: 600;
+    background-color: #fff5f7;
+    padding: 10px;
+    border-radius: 12px;
+    border: 2px solid #ffb6c1;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Trophy Emoji Styles */
+#trophy {
+    font-size: 40px;
+    color: gold;
+    margin-top: 15px;
+    display: none; /* Hidden by default */
+}
+
+/* Animation Keyframes */
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* Background Decorations */
+.container:before {
+    content: '✨';
+    font-size: 36px;
+    color: #ffd1dc;
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    animation: rotate 4s linear infinite;
+}
+
+.container:after {
+    content: '✨';
+    font-size: 36px;
+    color: #ffd1dc;
+    position: absolute;
+    bottom: -20px;
+    right: -20px;
+    animation: rotate 4s linear infinite reverse;
+}
+
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}

@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Number Guessing Game</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #1cb0f6;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+            transition: background-color 0.5s ease;
+        }
+
+        /* Container Styles */
+        .container {
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 320px;
+            text-align: center;
+            transition: transform 0.2s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Heading Styles */
+        h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            color: #58cc02;
+            font-weight: 800;
+        }
+
+        p {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        /* High Score Styles */
+        #highScore {
+            font-size: 20px;
+            color: #ff4500;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        /* Emoji Styles */
+        #emoji {
+            font-size: 50px;
+            margin-bottom: 20px;
+        }
+
+        /* Trophy Emoji Styles */
+        #trophy {
+            font-size: 50px;
+            color: gold;
+            margin-top: 20px;
+            display: none; /* Hidden by default */
+        }
+
+        /* Input Field Styles */
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="number"]:focus {
+            border-color: #58cc02;
+            outline: none;
+        }
+
+        /* Button Styles */
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #58cc02;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            background-color: #388e3c;
+            transform: translateY(0);
+        }
+
+        /* Message Styles */
+        #message {
+            font-size: 16px;
+            color: #58cc02;
+            margin-top: 20px;
+            font-weight: 600;
+        }
+
+        /* Attempts Styles */
+        #attempts {
+            font-size: 14px;
+            color: #888;
+            margin-top: 10px;
+        }
+
+        /* Timer Styles */
+        #timer {
+            font-size: 24px;
+            color: #ff4500;
+            margin-top: 20px;
+            font-weight: 700;
+            background-color: #fff3cd;
+            padding: 10px;
+            border-radius: 12px;
+            border: 2px solid #ffb74d;
+            display: inline-block;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Animation Styles */
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* Additional Cute Elements */
+        .container:after {
+            content: '';
+            display: block;
+            width: 50px;
+            height: 50px;
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/7/7c/Duolingo_logo_2021.svg'); /* Duolingo's owl logo */
+            background-size: cover;
+            margin: 20px auto 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Guess the Number</h1>
+        <p id="highScore">High Score: {{ high_score }}</p>
+        <p>Select Difficulty:</p>
+        <select id="difficulty" onchange="setDifficulty()">
+            <option value="50">Easy (1-50)</option>
+            <option value="100" selected>Medium (1-100)</option>
+            <option value="200">Hard (1-200)</option>
+        </select>
+        <p>Pick a number between 1 and <span id="maxNumber">100</span></p>
+        <p id="emoji">🤔</p> <!-- Emoji feedback -->
+        <input type="number" id="guess" placeholder="Enter your guess">
+        <button id="submitBtn" onclick="submitGuess()">Submit Guess</button>
+        <button id="resetBtn" onclick="resetGame()" style="display:none;">Play Again</button>
+        <p id="message"></p>
+        <p id="attempts">Attempts: 0</p>
+        <p id="timer">Time Left: 60 seconds</p> <!-- Timer Display -->
+        <p id="trophy">🏆</p> <!-- Trophy Emoji -->
+    </div>
+
+    <script>
+        let maxNumber = 100;
+        let randomNumber = Math.floor(Math.random() * maxNumber) + 1;
+        let attempts = 0;
+        let timeLeft = 60; // 60 seconds countdown
+        let timerInterval;
+
+        function setDifficulty() {
+            maxNumber = document.getElementById("difficulty").value;
+            randomNumber = Math.floor(Math.random() * maxNumber) + 1;
+            document.getElementById("maxNumber").textContent = maxNumber;
+
+            // Change background color based on difficulty
+            const colorByDifficulty = {
+                '50': '#ffcccb',   // Easy - Light Red
+                '100': '#1cb0f6',  // Medium - Default Blue
+                '200': '#d1ffb0'   // Hard - Light Green
+            };
+
+            document.body.style.backgroundColor = colorByDifficulty[maxNumber];
+
+            resetGame();
+        }
+
+        function submitGuess() {
+            const userGuess = parseInt(document.getElementById("guess").value);
+            const message = document.getElementById("message");
+            const emoji = document.getElementById("emoji");
+            const attemptsDisplay = document.getElementById("attempts");
+            const resetBtn = document.getElementById("resetBtn");
+            const trophy = document.getElementById("trophy");
+
+            attempts++;
+
+            if (userGuess === randomNumber) {
+                message.textContent = `🎉 Congratulations! You guessed the number in ${attempts} attempts.`;
+                message.style.color = "green";
+                emoji.textContent = "🥳";
+                emoji.style.animation = "bounce 0.5s ease";
+                resetBtn.style.display = "block";
+                document.getElementById("submitBtn").style.display = "none";
+                document.getElementById("guess").disabled = true;
+
+                // Stop the timer
+                clearInterval(timerInterval);
+
+                // Check for achievements
+                checkAchievements();
+
+            } else if (userGuess > randomNumber) {
+                message.textContent = "📉 Too high! Try again.";
+                message.style.color = "red";
+                emoji.textContent = "😅";
+                emoji.style.animation = "shake 0.5s ease";
+            } else {
+                message.textContent = "📈 Too low! Try again.";
+                message.style.color = "red";
+                emoji.textContent = "😅";
+                emoji.style.animation = "shake 0.5s ease";
+            }
+
+            attemptsDisplay.textContent = `Attempts: ${attempts}`;
+
+            setTimeout(() => {
+                emoji.style.animation = ""; // Reset animation
+            }, 500);
+        }
+
+        function checkAchievements() {
+            const achievements = ['🏆 Achievement Unlocked: First Try Win!'];
+            if (achievements.length > 0) {
+                // Display the trophy emoji
+                document.getElementById("trophy").style.display = "block";
+                achievements.forEach(achievement => {
+                    alert(achievement); // Alert each achievement
+                });
+            }
+        }
+
+        function resetGame() {
+            randomNumber = Math.floor(Math.random() * maxNumber) + 1;
+            attempts = 0;
+            timeLeft = 60; // Reset timer to 60 seconds
+
+            document.getElementById("message").textContent = "";
+            document.getElementById("attempts").textContent = "Attempts: 0";
+            document.getElementById("guess").value = "";
+            document.getElementById("guess").disabled = false;
+            document.getElementById("submitBtn").style.display = "block";
+            document.getElementById("resetBtn").style.display = "none";
+            document.getElementById("emoji").textContent = "🤔";
+
+            // Hide the trophy emoji
+            document.getElementById("trophy").style.display = "none";
+
+            // Reset and start the timer
+            clearInterval(timerInterval);
+            startTimer();
+        }
+
+        function startTimer() {
+            document.getElementById("timer").textContent = `Time Left: ${timeLeft} seconds`;
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById("timer").textContent = `Time Left: ${timeLeft} seconds`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById("message").textContent = "⏰ Time's up! You lose!";
+                    document.getElementById("guess").disabled = true;
+                    document.getElementById("submitBtn").style.display = "none";
+                    document.getElementById("resetBtn").style.display = "block";
+                    document.body.style.backgroundColor = "hsl(0, 100%, 85%)"; // Set background to red on loss
+                }
+            }, 1000);
+        }
+
+        document.getElementById("guess").addEventListener("input", function() {
+            document.getElementById("message").textContent = "";
+            document.getElementById("emoji").textContent = "🤔"; // Reset emoji when typing
+            document.body.style.backgroundColor = "hsl(60, 100%, 85%)"; // Reset background to neutral while typing
+        });
+
+        // Listen for the "Enter" key press to submit the guess
+        document.getElementById("guess").addEventListener("keydown", function(event) {
+            if (event.key === "Enter") {
+                submitGuess();
+            }
+        });
+
+        // Initialize the game with the selected difficulty level
+        setDifficulty();
+    </script>
+</body>
+</html>
