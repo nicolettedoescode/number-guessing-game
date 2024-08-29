@@ -1,0 +1,40 @@
+version: 2.1
+
+jobs:
+  build:
+    docker:
+      - image: circleci/python:3.8  # Python Docker image
+    steps:
+      - checkout  # Check out your source code
+      - run:
+          name: Install dependencies
+          command: |
+            pip install -r requirements.txt
+      - run:
+          name: Run tests
+          command: |
+            pytest  # Replace with your test command
+
+  deploy:
+    docker:
+      - image: circleci/python:3.8
+    steps:
+      - checkout
+      - run:
+          name: Install DigitalOcean CLI
+          command: |
+            curl -sSL https://github.com/digitalocean/doctl/releases/download/v1.90.0/doctl-1.90.0-linux-amd64.tar.gz | tar -xzC /usr/local/bin
+      - run:
+          name: Deploy to DigitalOcean App Platform
+          command: |
+            doctl auth init -t $DO_API_TOKEN
+            doctl apps create --spec .do/app.yaml  # Use a DigitalOcean App spec file if applicable
+
+workflows:
+  version: 2
+  build_and_deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
