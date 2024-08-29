@@ -53,7 +53,7 @@ p {
 
 /* Input Field Styles */
 input[type="number"] {
-    width: calc(100% - 20px);
+    width: calc(100% - 24px); /* Adjusted to account for padding */
     padding: 12px;
     margin-bottom: 15px;
     border: 2px solid #ffd1dc;
@@ -73,7 +73,7 @@ input[type="number"]:focus {
 
 /* Difficulty Select Styles */
 select {
-    width: 100%;
+    width: calc(100% - 24px); /* Adjusted to account for padding */
     padding: 12px;
     margin-bottom: 15px;
     border: 2px solid #ffd1dc;
@@ -93,7 +93,7 @@ select:focus {
 
 /* Button Styles */
 button {
-    width: 100%;
+    width: calc(100% - 24px); /* Adjusted to account for padding */
     padding: 12px;
     background-color: #ff6f91;
     color: white;
@@ -142,7 +142,7 @@ button:active {
     padding: 10px;
     border-radius: 12px;
     border: 2px solid #ffb6c1;
-    width: 100%;
+    width: calc(100% - 24px); /* Adjusted to account for padding */
     box-sizing: border-box;
 }
 

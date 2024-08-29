@@ -6,8 +6,14 @@ let timerInterval;
 let level = 1; // Start at level 1
 
 function setDifficulty() {
-    // Increase the maxNumber based on the current level
-    maxNumber = document.getElementById("difficulty").value * level;
+    const difficulty = parseInt(document.getElementById("difficulty").value, 10);
+
+    if (isNaN(difficulty) || difficulty <= 0) {
+        alert("Please select a valid difficulty level.");
+        return;
+    }
+
+    maxNumber = difficulty * level;
     randomNumber = Math.floor(Math.random() * maxNumber) + 1;
     document.getElementById("maxNumber").textContent = maxNumber;
 
@@ -15,11 +21,17 @@ function setDifficulty() {
 }
 
 function submitGuess() {
-    const userGuess = parseInt(document.getElementById("guess").value);
+    const userGuess = parseInt(document.getElementById("guess").value, 10);
     const message = document.getElementById("message");
     const emoji = document.getElementById("emoji");
     const attemptsDisplay = document.getElementById("attempts");
     const resetBtn = document.getElementById("resetBtn");
+
+    if (isNaN(userGuess)) {
+        message.textContent = "Please enter a valid number.";
+        message.style.color = "orange";
+        return;
+    }
 
     attempts++;
 
@@ -111,11 +123,16 @@ function startTimer() {
     }, 1000);
 }
 
+// Initialize the game with the selected difficulty level
+document.getElementById("difficulty").addEventListener("change", setDifficulty);
+document.getElementById("submitBtn").addEventListener("click", submitGuess);
+document.getElementById("resetBtn").addEventListener("click", resetGame);
+
 document.getElementById("guess").addEventListener("input", function() {
     document.getElementById("message").textContent = "";
     document.getElementById("emoji").textContent = "🤔"; // Reset emoji when typing
     document.body.style.backgroundColor = "hsl(60, 100%, 85%)"; // Reset background to neutral while typing
 });
 
-// Initialize the game with the selected difficulty level
+// Initialize game setup
 setDifficulty();
