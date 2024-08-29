@@ -1,11 +1,12 @@
 from flask import Flask, render_template, request, jsonify, make_response
 import random
+import os
 
 app = Flask(__name__)
 
 # Function to get high score from cookies
 def get_high_score(cookies):
-    return int(cookies.get('high_score', 0))
+    return int(cookies.get('high_score', '0'))
 
 # Function to save high score to cookies
 def save_high_score(response, score):
@@ -50,7 +51,7 @@ def guess():
 
         # Check and update high score
         high_score = get_high_score(request.cookies)
-        if high_score is None or attempts < high_score:
+        if attempts < high_score or high_score == 0:
             high_score = attempts
             response['message'] += ' 🎉 New high score!'
             response['new_high_score'] = high_score
@@ -88,4 +89,5 @@ def reset_high_score():
     return resp
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Set debug mode based on environment variable
+    app.run(debug=os.getenv('FLASK_ENV') == 'development')
