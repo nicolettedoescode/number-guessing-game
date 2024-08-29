@@ -89,5 +89,6 @@ def reset_high_score():
     return resp
 
 if __name__ == '__main__':
-    # Set debug mode based on environment variable
-    app.run(debug=os.getenv('FLASK_ENV') == 'development')
+    # Set debug mode based on environment variable and bind to 0.0.0.0
+    port = int(os.getenv('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=os.getenv('FLASK_ENV') == 'development')
